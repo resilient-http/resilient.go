@@ -3,6 +3,8 @@
 Extensible and middleware-oriented HTTP client with superpowers like fail over, balanced and dynamic server discovery,
 designed for distributed and reactive systems
 
+**This is a work in progress**
+
 ## Installation
 
 ```
