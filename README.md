@@ -1,10 +1,10 @@
 # resilient.go [![Build Status](https://travis-ci.org/resilient-http/resilient.go.png)](https://travis-ci.org/resilient-http/resilient.go) [![GitHub release](http://img.shields.io/github/tag/resilient-http/resilient.go.svg?style=flat-square)](https://github.com/resilient-http/resilient.go/releases) [![GoDoc](https://godoc.org/github.com/resilient-http/resilient.go?status.svg)](https://godoc.org/github.com/resilient-http/resilient.go) [![Coverage Status](https://coveralls.io/repos/resilient-http/resilient.go/badge.svg?branch=master)](https://coveralls.io/r/resilient-http/resilient.go?branch=master)
 
-Middleware-oriented and plugable HTTP client with superpowers designed 
+Middleware-oriented, plugable and fault tolerant HTTP client designed 
 for distributed and [reactive](http://www.reactivemanifesto.org/) systems
 
-This can be considered as a free-style port in Go based on resilient.js, 
-but focused on a better design, extensibility and simplicity.
+This is a port in Go based on [r]esilient.js](https://github.com/resilient-http/resilient.js), 
+but focused on better design, extensibility and simplicity.
 
 **Work in progress**
 

@@ -10,36 +10,40 @@ type Options struct {
 	RetryDelay time.Duration
 }
 
-func Failover(o Options) func(*http.Request, *http.Response, error) bool {
-	return func(req *http.Request, res *http.Response, err error) bool {
-		var retry bool
+func New(o Options) {
+	return func() func(*http.Request, *http.Response, error) bool {
+		retries := o.Retries
 
-		defer (func() {
-			if retry == false {
-				return
+		return func(req *http.Request, res *http.Response, err error) bool {
+			var retry bool
+
+			defer (func() {
+				if retry == false {
+					return
+				}
+
+				retries -= 1
+				if retries <= 0 {
+					retry = false
+					return
+				}
+
+				if o.RetryDelay > 0 {
+					time.Sleep(o.RetryDelay)
+				}
+			})()
+
+			if err != nil {
+				retry = true
+				return retry
 			}
 
-			o.Retries -= 1
-			if o.Retries == 0 {
-				retry = false
-				return
+			if res.StatusCode >= 500 {
+				retry = true
+				return retry
 			}
 
-			if o.RetryDelay > 0 {
-				time.Sleep(o.RetryDelay)
-			}
-		})()
-
-		if err != nil {
-			retry = true
 			return retry
 		}
-
-		if res.StatusCode >= 500 {
-			retry = true
-			return retry
-		}
-
-		return retry
 	}
 }

@@ -16,15 +16,17 @@ func TestStrategy(t *testing.T) {
 	defer ts.Close()
 
 	resilient := New()
-	resilient.UseServers([]string{ts.URL, ts.URL})
+	resilient.UseServers([]string{ts.URL, ts.URL, ts.URL})
 
 	retries := 3
-	resilient.UseStrategy(func(req *http.Request, res *http.Response, err error) bool {
-		if retries == 0 {
-			return false
+	resilient.UseStrategy(func() StrategyHandler {
+		return func(req *http.Request, res *http.Response, err error) bool {
+			if retries == 0 {
+				return false
+			}
+			retries -= 1
+			return true
 		}
-		retries -= 1
-		return true
 	})
 
 	res, err := resilient.Get("/foo")
