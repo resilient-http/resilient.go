@@ -6,6 +6,8 @@ for distributed and [reactive](http://www.reactivemanifesto.org/) systems
 This implementation was originally based on [resilient.js](https://github.com/resilient-http/resilient.js), 
 but focused on better design, extensibility and simplicity.
 
+Requires Go +1.3
+
 **Work in progress**
 
 ## Superpowers
@@ -24,7 +26,6 @@ but focused on better design, extensibility and simplicity.
 ```
 go get gopkg.in/resilient-http/resilient.go.v0
 ```
-Requires Go +1.3
 
 ## Addons
 

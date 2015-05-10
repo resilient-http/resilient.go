@@ -8,13 +8,19 @@ import (
 )
 
 func NewRequest(r *Resilient, o *client.Options) (*http.Response, error) {
-	strategies := initStrategies(r)
+	var err error
+
+	err = r.middlewares.DispatchOut(o)
+	if err != nil {
+		return nil, err
+	}
 
 	c, err := client.New(o)
 	if err != nil {
 		return nil, err
 	}
 
+	strategies := initStrategies(r)
 	return send(c, strategies, *r)
 }
 
@@ -30,21 +36,23 @@ func send(c *client.Client, strategies []StrategyHandler, r Resilient) (*http.Re
 	req := c.Request
 	hasServers := len(r.Servers) > 0
 
-	if req.URL.Host == "" && hasServers == false {
+	if hasServers {
+		err := buildServerUrl(req, r)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if req.URL.Host == "" {
 		return nil, errors.New("Missing server URL")
 	}
 
-	serverURL, err := url.Parse(r.Servers[0])
-	if err != nil {
-		return nil, err
-	}
-	req.URL.Host = serverURL.Host
-	req.URL.User = serverURL.User
-	req.URL.Scheme = serverURL.Scheme
-	req.URL.Opaque = serverURL.Opaque
-	req.URL.Path = serverURL.Path + req.URL.Path
-
 	res, err := c.Do()
+
+	err = r.middlewares.DispatchIn(req, res, err)
+	if err != nil {
+		return res, err
+	}
 
 	var retry bool
 	for _, strategy := range strategies {
@@ -61,4 +69,18 @@ func send(c *client.Client, strategies []StrategyHandler, r Resilient) (*http.Re
 	}
 
 	return res, err
+}
+
+func buildServerUrl(req *http.Request, r Resilient) error {
+	serverURL, err := url.Parse(r.Servers[0])
+	if err != nil {
+		return err
+	}
+	req.URL.Host = serverURL.Host
+	req.URL.User = serverURL.User
+	req.URL.Scheme = serverURL.Scheme
+	req.URL.Opaque = serverURL.Opaque
+	req.URL.Path = serverURL.Path + req.URL.Path
+
+	return nil
 }

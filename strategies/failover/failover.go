@@ -11,7 +11,7 @@ type Options struct {
 }
 
 func New(o Options) {
-	return func() func(*http.Request, *http.Response, error) bool {
+	return func() func(*http.Request, *http.Response, error) {
 		retries := o.Retries
 
 		return func(req *http.Request, res *http.Response, err error) bool {

@@ -2,28 +2,29 @@ package resilient
 
 import (
 	"gopkg.in/resilient-http/resilient.go.v0/client"
+	"gopkg.in/resilient-http/resilient.go.v0/middlewares"
+	"io"
 	"net/http"
 	"sync"
 )
 
-type StrategyHandler func(*http.Request, *http.Response, error) bool
 type Strategy func() StrategyHandler
 
-type Middleware interface {
-	Out()
-	In()
-}
+type StrategyHandler func(*http.Request, *http.Response, error) bool
+
+type MiddlewareHandler func(*Resilient) (middlewares.Middleware, error)
 
 type Resilient struct {
 	sync.Mutex
-	Servers          []string
-	DiscoveryServers []string
-	strategies       []Strategy
-	middlewares      []Middleware
+	Servers     []string
+	strategies  []Strategy
+	middlewares *middlewares.Middlewares
 }
 
 func New() *Resilient {
-	return &Resilient{}
+	return &Resilient{
+		middlewares: middlewares.New(),
+	}
 }
 
 func (r *Resilient) UseServers(servers []string) *Resilient {
@@ -33,17 +34,16 @@ func (r *Resilient) UseServers(servers []string) *Resilient {
 	return r
 }
 
-func (r *Resilient) UseDiscoveryServers(servers []string) *Resilient {
+func (r *Resilient) Use(m MiddlewareHandler) error {
 	r.Lock()
 	defer r.Unlock()
-	r.DiscoveryServers = servers
-	return r
-}
 
-func (r *Resilient) Use(m Middleware) {
-	r.Lock()
-	defer r.Unlock()
-	r.middlewares = append(r.middlewares, m)
+	handler, err := m(r)
+	if err == nil {
+		r.middlewares.Add(handler)
+	}
+
+	return err
 }
 
 func (r *Resilient) UseStrategy(s Strategy) {
@@ -57,8 +57,56 @@ func (r *Resilient) Get(url string) (*http.Response, error) {
 		Method: "GET",
 		URL:    url,
 	}
-
 	return r.Send(o)
+}
+
+func (r *Resilient) Post(url string, body io.Reader) (*http.Response, error) {
+	o := &client.Options{
+		Method: "POST",
+		URL:    url,
+		Body:   body,
+	}
+	return r.Send(o)
+}
+
+func (r *Resilient) Put(url string, body io.Reader) (*http.Response, error) {
+	o := &client.Options{
+		Method: "POST",
+		URL:    url,
+		Body:   body,
+	}
+	return r.Send(o)
+}
+
+func (r *Resilient) Delete(url string, body io.Reader) (*http.Response, error) {
+	o := &client.Options{
+		Method: "DELETE",
+		URL:    url,
+		Body:   body,
+	}
+	return r.Send(o)
+}
+
+func (r *Resilient) Patch(url string, body io.Reader) (*http.Response, error) {
+	o := &client.Options{
+		Method: "PATCH",
+		URL:    url,
+		Body:   body,
+	}
+	return r.Send(o)
+}
+
+func (r *Resilient) Options(url string, body io.Reader) (*http.Response, error) {
+	o := &client.Options{
+		Method: "OPTIONS",
+		URL:    url,
+		Body:   body,
+	}
+	return r.Send(o)
+}
+
+func (r *Resilient) Custom() *client.Options {
+	return &client.Options{Method: "GET"}
 }
 
 func (r *Resilient) Send(o *client.Options) (*http.Response, error) {
