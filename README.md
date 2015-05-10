@@ -17,6 +17,8 @@ but focused on a better design, extensibility and simplicity.
 - Retries cycles 
 - Client side based balancing and load distribution (via)
 
+**This is a work in progress**
+
 ## Installation
 
 ```
