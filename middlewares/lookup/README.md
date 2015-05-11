@@ -5,9 +5,12 @@ Dynamic servers lookup middleware for Resilient.go
 ## Features
 
 - Dynamic servers lookup
-- Automatic servers refresh (via goroutine)
+- Automatic servers refresh
+- Self servers lookup
 
-## Adaptors
+## Adapters
+
+List of build-in adapters for different lookup servers interfaces
 
 - Consul
 
@@ -44,3 +47,7 @@ func main() {
   fmt.Printf("Status: %d", res.StatusCode)
 }
 ```
+
+## License 
+
+MIT - Tomas Aparicio
