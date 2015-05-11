@@ -3,19 +3,16 @@ package resilient
 import (
 	"gopkg.in/resilient-http/resilient.go.v0/client"
 	"gopkg.in/resilient-http/resilient.go.v0/middlewares"
+	"gopkg.in/resilient-http/resilient.go.v0/strategies"
 	"io"
 	"net/http"
 	"sync"
 )
 
-type Strategy func() StrategyHandler
-
-type StrategyHandler func(*http.Request, *http.Response, error) bool
-
 type Resilient struct {
 	sync.Mutex
 	Servers     []string
-	strategies  []Strategy
+	strategies  []strategies.Strategy
 	middlewares *middlewares.Middlewares
 }
 
@@ -43,7 +40,7 @@ func (r *Resilient) Use(m middlewares.Handler) error {
 	return err
 }
 
-func (r *Resilient) UseStrategy(s Strategy) {
+func (r *Resilient) UseStrategy(s strategies.Strategy) {
 	r.Lock()
 	defer r.Unlock()
 	r.strategies = append(r.strategies, s)

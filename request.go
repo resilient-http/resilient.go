@@ -3,6 +3,7 @@ package resilient
 import (
 	"errors"
 	"gopkg.in/resilient-http/resilient.go.v0/client"
+	"gopkg.in/resilient-http/resilient.go.v0/strategies"
 	"net/http"
 	"net/url"
 )
@@ -28,15 +29,15 @@ func NewRequest(r *Resilient, o *client.Options) (*http.Response, error) {
 	return send(c, strategies, *r)
 }
 
-func initStrategies(r *Resilient) []StrategyHandler {
-	strategies := make([]StrategyHandler, len(r.strategies))
+func initStrategies(r *Resilient) []strategies.Handler {
+	strategies := make([]strategies.Handler, len(r.strategies))
 	for i, strategy := range r.strategies {
 		strategies[i] = strategy()
 	}
 	return strategies
 }
 
-func send(c *client.Client, strategies []StrategyHandler, r Resilient) (*http.Response, error) {
+func send(c *client.Client, strategies []strategies.Handler, r Resilient) (*http.Response, error) {
 	req := c.Request
 	hasServers := len(r.Servers) > 0
 

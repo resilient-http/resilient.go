@@ -1,6 +1,7 @@
 package failover
 
 import (
+	"gopkg.in/resilient-http/resilient.go.v0/strategies"
 	"net/http"
 	"time"
 )
@@ -10,8 +11,8 @@ type Options struct {
 	RetryDelay time.Duration
 }
 
-func New(o Options) {
-	return func() func(*http.Request, *http.Response, error) {
+func New(o Options) func() strategies.Handler {
+	return func() strategies.Handler {
 		retries := o.Retries
 
 		return func(req *http.Request, res *http.Response, err error) bool {
@@ -40,7 +41,6 @@ func New(o Options) {
 
 			if res.StatusCode >= 500 {
 				retry = true
-				return retry
 			}
 
 			return retry

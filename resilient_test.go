@@ -4,6 +4,7 @@ import (
 	//"io/ioutil"
 	"gopkg.in/resilient-http/resilient.go.v0/client"
 	"gopkg.in/resilient-http/resilient.go.v0/middlewares"
+	"gopkg.in/resilient-http/resilient.go.v0/strategies"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,7 +21,7 @@ func TestStrategy(t *testing.T) {
 	resilient.UseServers([]string{ts.URL, ts.URL, ts.URL})
 
 	retries := 3
-	resilient.UseStrategy(func() StrategyHandler {
+	resilient.UseStrategy(func() strategies.Handler {
 		return func(req *http.Request, res *http.Response, err error) bool {
 			if retries == 0 {
 				return false
@@ -46,7 +47,7 @@ func TestStrategy(t *testing.T) {
 }
 
 type middleware struct {
-	resilient *Resilient
+	resilient middlewares.Resilient
 	servers   []string
 }
 
@@ -68,7 +69,7 @@ func TestMiddleware(t *testing.T) {
 
 	resilient := New()
 
-	resilient.Use(func(r *Resilient) (middlewares.Middleware, error) {
+	resilient.Use(func(r middlewares.Resilient) (middlewares.Middleware, error) {
 		return &middleware{servers: []string{ts.URL}, resilient: r}, nil
 	})
 
