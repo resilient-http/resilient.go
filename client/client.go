@@ -10,9 +10,9 @@ import (
 )
 
 type Client struct {
+	//*http.Request
 	HttpClient *http.Client
 	Request    *http.Request
-	Options    *Options
 }
 
 func New(o *Options) (*Client, error) {
@@ -74,7 +74,6 @@ func New(o *Options) (*Client, error) {
 	o.Client.Transport = transport
 
 	return &Client{
-		Options:    o,
 		Request:    req,
 		HttpClient: o.Client,
 	}, nil

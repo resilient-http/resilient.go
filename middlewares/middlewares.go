@@ -5,6 +5,13 @@ import (
 	"net/http"
 )
 
+type Handler func(Resilient) (Middleware, error)
+
+type Resilient interface {
+	Use(Handler) error
+	UseServers([]string)
+}
+
 type Middleware interface {
 	In(*http.Request, *http.Response, error) error
 	Out(*client.Options) error

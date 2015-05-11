@@ -12,8 +12,6 @@ type Strategy func() StrategyHandler
 
 type StrategyHandler func(*http.Request, *http.Response, error) bool
 
-type MiddlewareHandler func(*Resilient) (middlewares.Middleware, error)
-
 type Resilient struct {
 	sync.Mutex
 	Servers     []string
@@ -27,14 +25,13 @@ func New() *Resilient {
 	}
 }
 
-func (r *Resilient) UseServers(servers []string) *Resilient {
+func (r *Resilient) UseServers(servers []string) {
 	r.Lock()
 	defer r.Unlock()
 	r.Servers = servers
-	return r
 }
 
-func (r *Resilient) Use(m MiddlewareHandler) error {
+func (r *Resilient) Use(m middlewares.Handler) error {
 	r.Lock()
 	defer r.Unlock()
 

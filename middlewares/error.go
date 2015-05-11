@@ -8,7 +8,7 @@ type MiddlewareError struct {
 	name    string
 }
 
-func NewMiddlewareError(name string, message string, code int) MiddlewareError {
+func NewMiddlewareError(name, message string, code int) error {
 	return MiddlewareError{
 		name:    name,
 		message: message,
@@ -16,6 +16,6 @@ func NewMiddlewareError(name string, message string, code int) MiddlewareError {
 	}
 }
 
-func (e *MiddlewareError) Error() string {
+func (e MiddlewareError) Error() string {
 	return fmt.Sprintf("Middleware error [%s]: %s", e.name, e.message)
 }

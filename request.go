@@ -7,6 +7,10 @@ import (
 	"net/url"
 )
 
+type Request struct {
+	Requests []string
+}
+
 func NewRequest(r *Resilient, o *client.Options) (*http.Response, error) {
 	var err error
 
@@ -76,6 +80,7 @@ func buildServerUrl(req *http.Request, r Resilient) error {
 	if err != nil {
 		return err
 	}
+
 	req.URL.Host = serverURL.Host
 	req.URL.User = serverURL.User
 	req.URL.Scheme = serverURL.Scheme
