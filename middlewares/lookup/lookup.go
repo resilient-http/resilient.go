@@ -18,9 +18,13 @@ var Error = func(msg string, code int) error {
 }
 
 type Options struct {
-	Servers []string
-	Refresh time.Duration
-	Retries int
+	Servers      []string
+	Refresh      time.Duration
+	Timeout      time.Duration
+	Retries      int
+	Background   bool
+	SelfLookup   bool
+	SelfRefresh  time.Duration
 }
 
 type Discovery struct {
