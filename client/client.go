@@ -10,7 +10,7 @@ import (
 )
 
 type Client struct {
-	//*http.Request
+	*http.Client
 	HttpClient *http.Client
 	Request    *http.Request
 }

@@ -6,6 +6,7 @@ import (
 	"gopkg.in/resilient-http/resilient.go.v0/middlewares"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -93,7 +94,8 @@ func (m *Discovery) Discover() error {
 	}
 
 	t := []string{}
-	err = json.Unmarshal(body, &t)
+	dec := json.NewDecoder(strings.NewReader(jsonStream))
+	err = dec.Decode(&t)
 	if err != nil {
 		return err
 	}

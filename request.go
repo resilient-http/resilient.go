@@ -6,10 +6,18 @@ import (
 	"gopkg.in/resilient-http/resilient.go.v0/strategies"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type Request struct {
-	Requests []string
+	cancelled bool
+	attempts  []*Request
+	Time      time.Time
+	Error     error
+	Response  *http.Response
+	Request   *http.Request
+	Client    *client.Client
+	resilient *Resilient
 }
 
 func NewRequest(r *Resilient, o *client.Options) (*http.Response, error) {
@@ -20,26 +28,33 @@ func NewRequest(r *Resilient, o *client.Options) (*http.Response, error) {
 		return nil, err
 	}
 
-	c, err := client.New(o)
+	client, err := client.New(o)
 	if err != nil {
 		return nil, err
 	}
 
-	strategies := initStrategies(r)
-	return send(c, strategies, *r)
-}
-
-func initStrategies(r *Resilient) []strategies.Handler {
-	strategies := make([]strategies.Handler, len(r.strategies))
-	for i, strategy := range r.strategies {
-		strategies[i] = strategy()
+	request := &Request{
+		Client:     client.HttpClient,
+		Request:    client.Request,
+		strategies: initStrategies(r),
+		resilient:  r,
 	}
-	return strategies
+
+	return r.Send(c, strategies, *r)
 }
 
-func send(c *client.Client, strategies []strategies.Handler, r Resilient) (*http.Response, error) {
+func (r *Request) Attemps() []*Request {
+	return r.attempts
+}
+
+func (r *Request) Cancel() {
+	r.Client.Transport.CancelRequest(r.Request)
+	r.cancelled = true
+}
+
+func (r *Request) Send() (*http.Response, error) {
 	req := c.Request
-	hasServers := len(r.Servers) > 0
+	hasServers := len(re.Servers) > 0
 
 	if hasServers {
 		err := buildServerUrl(req, r)
@@ -54,7 +69,7 @@ func send(c *client.Client, strategies []strategies.Handler, r Resilient) (*http
 
 	res, err := c.Do()
 
-	err = r.middlewares.DispatchIn(req, res, err)
+	err = re.middlewares.DispatchIn(req, res, err)
 	if err != nil {
 		return res, err
 	}
@@ -70,10 +85,18 @@ func send(c *client.Client, strategies []strategies.Handler, r Resilient) (*http
 		if hasServers && len(r.Servers) > 1 {
 			r.Servers = r.Servers[1:]
 		}
-		return send(c, strategies, r)
+		return r.Send()
 	}
 
 	return res, err
+}
+
+func initStrategies(r *Resilient) []strategies.Handler {
+	strategies := make([]strategies.Handler, len(r.strategies))
+	for i, strategy := range r.strategies {
+		strategies[i] = strategy()
+	}
+	return strategies
 }
 
 func buildServerUrl(req *http.Request, r Resilient) error {
