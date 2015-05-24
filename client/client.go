@@ -82,3 +82,7 @@ func New(o *Options) (*Client, error) {
 func (c *Client) Do() (*http.Response, error) {
 	return c.HttpClient.Do(c.Request)
 }
+
+func (c *Client) Send() (*http.Response, error) {
+	return c.HttpClient.Do(c.Request)
+}
