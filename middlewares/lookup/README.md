@@ -1,4 +1,4 @@
-# Lookup middleware
+# Lookup Middleware
 
 Dynamic servers lookup middleware for Resilient.go
 
