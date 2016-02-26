@@ -1,4 +1,4 @@
-# resilient.go [![Build Status](https://travis-ci.org/resilient-http/resilient.go.png)](https://travis-ci.org/resilient-http/resilient.go) [![GitHub release](http://img.shields.io/github/tag/resilient-http/resilient.go.svg?style=flat-square)](https://github.com/resilient-http/resilient.go/releases) [![GoDoc](https://godoc.org/github.com/resilient-http/resilient.go?status.svg)](https://godoc.org/github.com/resilient-http/resilient.go) [![Go Report Card](https://goreportcard.com/badge/github.com/resilient-http/resilient.go)](https://goreportcard.com/report/github.com/resilient-http/resilient.go)
+# resilient.go [![Build Status](https://travis-ci.org/resilient-http/resilient.go.png)](https://travis-ci.org/resilient-http/resilient.go) [![GoDoc](https://godoc.org/github.com/resilient-http/resilient.go?status.svg)](https://godoc.org/github.com/resilient-http/resilient.go) [![Go Report Card](https://goreportcard.com/badge/github.com/resilient-http/resilient.go)](https://goreportcard.com/report/github.com/resilient-http/resilient.go)
 
 resilient HTTP client for [Go](http://golang.org) built on top of [gentleman](https://github.com/h2non/gentleman) HTTP toolkit.
 
