@@ -4,6 +4,7 @@ import (
 	"gopkg.in/eapache/go-resiliency.v1/retrier"
 	"gopkg.in/h2non/gentleman-retry.v0"
 	"gopkg.in/h2non/gentleman.v0"
+	"time"
 )
 
 // New creates a new gentleman based HTTP client.
@@ -23,6 +24,6 @@ func NewRetryClient() *gentleman.Client {
 // exponential retry strategy in case of failure.
 func NewExponentialRetryClient() *gentleman.Client {
 	cli := New()
-	cli.Use(retry.New(retry.New(retrier.New(retrier.ExponentialBackoff(3, 100*time.Millisecond), nil))))
+	cli.Use(retry.New(retrier.New(retrier.ExponentialBackoff(3, 100*time.Millisecond), nil)))
 	return cli
 }
