@@ -4,7 +4,6 @@ import (
 	"gopkg.in/eapache/go-resiliency.v1/retrier"
 	"gopkg.in/h2non/gentleman-retry.v0"
 	"gopkg.in/h2non/gentleman.v0"
-	"net/http"
 )
 
 // New creates a new gentleman based HTTP client.
