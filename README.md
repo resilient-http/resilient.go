@@ -29,11 +29,15 @@ package main
 import (
   "fmt"
   "gopkg.in/resilient-http/resilient.go.v0"
+  "gopkg.in/h2non/gentleman-consul.v0"
 )
 
 func main() {
   // Create a new constant retry client
   cli := resilient.NewRetryClient()
+  
+  // Use Consul for service discovery
+  cli.Use(consul.New(consul.NewConfig("demo.consul.io", "web")))
 
   // Define base URL
   cli.URL("http://httpbin.org")
